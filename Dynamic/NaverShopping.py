@@ -1,5 +1,7 @@
+# Dynamic search
+# Naver shopping auto login and search keywords
+
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
@@ -16,6 +18,7 @@ from dotenv import load_dotenv
 load_dotenv()
 DATA = {"id":os.getenv("NAVER_ID"), "pw":os.getenv("NAVER_PW")}
 
+# Setting Option
 options = webdriver.ChromeOptions()
 options.add_experimental_option('excludeSwitches', ['enable-logging']) # Usb Error ignore
 options.add_argument("no-sandbox") 
