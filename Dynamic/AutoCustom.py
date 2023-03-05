@@ -1,3 +1,5 @@
+# Auto Customize PC
+
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
@@ -20,7 +22,6 @@ FILTER_OPTIONS = {
     "Mainboard_SOCKET": 2,
     "Memory_SOCKET": 2,
     "Memory_SIZE": 3,
-    "SSD_FORM": 1,
     "SSD_SIZE": 4,
     "Case_SIZE": 2,
     "Power_SIZE": 2
@@ -42,11 +43,16 @@ CATERGORY_CSS = {
 }
 
 user_cart = {}
+
 def find_visible(css):
     return wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, css)))
 
 
-def find_visibles(css): # Find all include selector 
+def find_visibles(css):
+    """
+    Find all include selector
+    """
+     
     find_visible(css)
     return browser.find_elements(By.CSS_SELECTOR, css)
 
@@ -62,6 +68,7 @@ def condition_count(part, options):
     for key in options.keys():
         if part in key:
             keys.append(key)
+    print(keys)
     return keys
         
 
@@ -69,13 +76,24 @@ def auto_select(part, selected):
     find_visible(CATERGORY_CSS[part]).click()
     time.sleep(1)
     options = find_visibles("div.search_option_item")
-    for option in condition_count(part, FILTER_OPTIONS):
+    for option in condition_count(part, FILTER_OPTIONS):    
         row = FILTER_OPTIONS[option]
         options[row].find_elements(By.CSS_SELECTOR, "button")[0].click()
         checkboxs = find_visibles("div[class$=open] span.item_text")
+        if "SIZE" in option:
+            print(f"{part}용량 선택")
+            for idx, item in enumerate(checkboxs):
+                print(f"{idx+1}: {item.text.strip()}")
+            num = int(input())
+            checkboxs[num-1].click()
+            time.sleep(1)
+                
         for s in checkboxs:
-            if s.text.strip() == selected:
+            if s.text.strip() in selected:
                 s.click()
+                if len(condition_count(part, FILTER_OPTIONS)) != 0:
+                    options[row].find_elements(By.CSS_SELECTOR, "button")[0].click()
+                    print("click")
                 time.sleep(1)
                 break
     
@@ -147,6 +165,7 @@ for idx, p in enumerate(products):
 choice = int(input("-> "))
 selected_cpu = products_list[choice-1]
 selected_socket = selected_cpu[1]
+time.sleep(2)
 
 # gpu category
 gpu = find_visible(CATERGORY_CSS["GPU"])
@@ -196,6 +215,8 @@ auto_select_list("Power")
 
 for key, item in user_cart.items():
     print(key, ":", item)
-#print(user_cart)
+
+# Customize by price, popular
+
 
 browser.quit()
