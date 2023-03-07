@@ -72,7 +72,7 @@ def condition_count(part, options):
     return keys
         
 
-def auto_select(part, selected):
+def auto_select(part, dependency=None):
     find_visible(CATERGORY_CSS[part]).click()
     time.sleep(1)
     options = find_visibles("div.search_option_item")
@@ -85,17 +85,18 @@ def auto_select(part, selected):
             for idx, item in enumerate(checkboxs):
                 print(f"{idx+1}: {item.text.strip()}")
             num = int(input())
-            checkboxs[num-1].click()
+            select_item = checkboxs[num-1]
+            select_item.click()
             time.sleep(1)
-                
-        for s in checkboxs:
-            if s.text.strip() in selected:
-                s.click()
-                if len(condition_count(part, FILTER_OPTIONS)) != 0:
-                    options[row].find_elements(By.CSS_SELECTOR, "button")[0].click()
-                    print("click")
-                time.sleep(1)
-                break
+        
+        if dependency is not None:        
+            for s in checkboxs:
+                if s.text.strip() in dependency:
+                    s.click()
+                    if len(condition_count(part, FILTER_OPTIONS)) != 0:
+                        options[row].find_elements(By.CSS_SELECTOR, "button")[0].click()
+                    time.sleep(1)
+                    break
     
 
 def auto_select_list(part):
@@ -202,15 +203,15 @@ auto_select("Memory", memory_socket)
 auto_select_list("Memory")
 
 # ssd 
-auto_select("SSD", "M.2 (2280)")
+auto_select("SSD")
 auto_select_list("SSD")
 
 # case 
-auto_select("Case", "미들타워")
+auto_select("Case")
 auto_select_list("Case")
 
 # power category
-auto_select("Power", "600W~699W")
+auto_select("Power")
 auto_select_list("Power")
 
 for key, item in user_cart.items():
