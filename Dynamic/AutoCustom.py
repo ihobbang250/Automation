@@ -139,6 +139,7 @@ time.sleep(1)
 products = find_visibles("div.scroll_box tr[class^=productList]")
 products_list = []
 text_deco("CPU를 선택")
+print("이름/ 소켓/ 가격/ 성능")
 for idx, p in enumerate(products):
     name = p.find_element(By.CSS_SELECTOR, "p.subject a").text
     name = re.sub(r"\(.* ?\)", "", name).strip()
@@ -218,6 +219,8 @@ for key, item in user_cart.items():
     print(key, ":", item)
 
 # Customize by price, popular
-
+# Mainboard Memory Socket select issue
+# When Customize, select Mainboard effects select Memory
+# Call auto_select("Memory") again
 
 browser.quit()
