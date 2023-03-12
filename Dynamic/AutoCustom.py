@@ -12,6 +12,7 @@ import re
 options = webdriver.ChromeOptions() 
 options.add_experimental_option('excludeSwitches', ['enable-logging']) # Usb Error ignore
 options.add_argument("no-sandbox") 
+options.add_argument("headless")
 
 browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 browser.get("https://shop.danawa.com/virtualestimate/?controller=estimateMain&methods=index&marketPlaceSeq=16")
@@ -68,7 +69,6 @@ def condition_count(part, options):
     for key in options.keys():
         if part in key:
             keys.append(key)
-    print(keys)
     return keys
         
 
@@ -81,7 +81,7 @@ def auto_select(part, dependency=None):
         options[row].find_elements(By.CSS_SELECTOR, "button")[0].click()
         checkboxs = find_visibles("div[class$=open] span.item_text")
         if "SIZE" in option:
-            print(f"{part}용량 선택")
+            print(f"{part} 선택")
             for idx, item in enumerate(checkboxs):
                 print(f"{idx+1}: {item.text.strip()}")
             num = int(input())
@@ -139,7 +139,6 @@ time.sleep(1)
 products = find_visibles("div.scroll_box tr[class^=productList]")
 products_list = []
 text_deco("CPU를 선택")
-print("이름/ 소켓/ 가격/ 성능")
 for idx, p in enumerate(products):
     name = p.find_element(By.CSS_SELECTOR, "p.subject a").text
     name = re.sub(r"\(.* ?\)", "", name).strip()
@@ -162,9 +161,22 @@ for idx, p in enumerate(products):
         price = int(re.sub(r'[^0-9]', "", price))
     except:
         price = None
-    products_list.append([name, socket, price])
-    print(f"{idx+1}. {name}/ {socket} / {price} / {performance}")
+    products_list.append([name, socket, price, performance])
+    #print(f"{idx+1}. {name}/ {socket} / {price} / {performance}")
+print("원하는 조합 방식을 선택")
+print("1.인기 2.성능 3.가격")
 choice = int(input("-> "))
+if choice == 1:
+    choice_popular_cpu = products_list[0]
+elif choice == 2:
+    choice_perform_cpu = sorted(products_list, key=lambda x: x[4])[0]
+    print(choice_perform_cpu)
+elif choice == 3:
+    choice_price_cpu = sorted(products_list, key=lambda x: x[3], reverse=True)[0]
+    print(choice_price_cpu)
+else:
+    raise Exception("Invalid choice")
+
 selected_cpu = products_list[choice-1]
 selected_socket = selected_cpu[1]
 time.sleep(2)
@@ -218,9 +230,11 @@ auto_select_list("Power")
 for key, item in user_cart.items():
     print(key, ":", item)
 
-# Customize by price, popular
+## Customize by price, popular ##
 # Mainboard Memory Socket select issue
-# When Customize, select Mainboard effects select Memory
+# Sol) When Customize, select Mainboard effects select Memory
 # Call auto_select("Memory") again
+
+user_cart["Mainboard"]
 
 browser.quit()
