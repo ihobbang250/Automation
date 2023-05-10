@@ -2,15 +2,14 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-
+import time
+import pandas as pd
+from collections import defaultdict
 
 # Setting Option
 options = webdriver.ChromeOptions()
 options.add_experimental_option('excludeSwitches', ['enable-logging']) # Usb Error ignore
 options.add_argument("no-sandbox") 
-options.add_argument("disable-gpu") 
 options.add_argument("disable-infobars")
 options.add_argument("--disable-extensions")
 options.add_argument("headless")
@@ -29,19 +28,28 @@ options.add_experimental_option('prefs', prefs)
 browser = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
 CATECORY = ['agriculture', 'energy', 'metals']
+data = defaultdict(list)
 
 for category in CATECORY:
     browser.get("https://www.reuters.com/markets/commodities/" + category + "/news")
-    #wait = WebDriverWait(browser, 10)
+
     print("---------")
     print(category)
     print("---------")
-    
+
     #Load more articles
     button = browser.find_element(By.CSS_SELECTOR, "button[data-testid=Button] span[data-testid=Text]")
     button.click()
+    time.sleep(0.5)
 
     #Scraping Headlines
     headlines= browser.find_elements(By.CSS_SELECTOR, "a[data-testid=Heading]")
     for heading in headlines:
-        print(heading.text)
+        data[category].append(heading)
+    
+    print(len(data[category]))
+
+
+### Data length difference -> Need to length uniform
+df = pd.DataFrame(data)
+df.to_csv("NEWS_data.csv", index = False)
