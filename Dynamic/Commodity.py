@@ -13,6 +13,7 @@ options.add_argument("no-sandbox")
 options.add_argument("disable-gpu") 
 options.add_argument("disable-infobars")
 options.add_argument("--disable-extensions")
+options.add_argument("headless")
 
 # Option Control to Speed up
 prefs = {'profile.default_content_setting_values': {'cookies' : 1, 'images': 2, 'plugins' : 2, 'popups': 2, 
