@@ -40,16 +40,18 @@ for category in CATECORY:
     #Load more articles
     button = browser.find_element(By.CSS_SELECTOR, "button[data-testid=Button] span[data-testid=Text]")
     button.click()
-    time.sleep(0.5)
+    time.sleep(2)
 
     #Scraping Headlines
     headlines= browser.find_elements(By.CSS_SELECTOR, "a[data-testid=Heading]")
     for heading in headlines:
-        data[category].append(heading)
+        data[category].append(heading.text)
     
     print(len(data[category]))
 
-
 ### Data length difference -> Need to length uniform
-df = pd.DataFrame(data)
+## ex) agri -> 29 energy -> 25
+min_length = min(len(lst) for lst in data.values())
+trimmed_data = {key: lst[:min_length] for key, lst in data.items()}
+df = pd.DataFrame(trimmed_data)
 df.to_csv("NEWS_data.csv", index = False)
