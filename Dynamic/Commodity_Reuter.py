@@ -49,8 +49,7 @@ for category in CATECORY:
     
     print(len(data[category]))
 
-### Data length difference -> Need to length uniform
-## ex) agri -> 29 energy -> 25
+# Data length uniform
 min_length = min(len(lst) for lst in data.values())
 trimmed_data = {key: lst[:min_length] for key, lst in data.items()}
 df = pd.DataFrame(trimmed_data)
